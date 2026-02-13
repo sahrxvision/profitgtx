@@ -15,6 +15,21 @@ string StateToString(const int state)
    return "PULLBACK";
 }
 
+double MidPrice()
+{
+   return (SymbolInfoDouble(_Symbol, SYMBOL_BID) + SymbolInfoDouble(_Symbol, SYMBOL_ASK)) * 0.5;
+}
+
+bool NearLevel(const double price, const double level, const double buffer_points)
+{
+   return (MathAbs(price - level) <= buffer_points * _Point);
+}
+
+double NormalizePrice(const double price)
+{
+   return NormalizeDouble(price, (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS));
+}
+
 double NormalizeLots(double lots)
 {
    double min_lot  = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);

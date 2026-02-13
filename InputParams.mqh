@@ -4,8 +4,29 @@
 input long   MagicNumber                 = 580001;
 input bool   Show_Levels                 = true;
 input double BaseLotSize                 = 0.10;
-
 input double War_Survivor_Lot_Multiplier = 2.5;
+
+input int    Trade_Cooldown_Seconds      = 300;
+input int    Max_Open_Trades             = 3;
+
+input int    Continuation_SL_Points      = 150;
+input int    Continuation_TP_Points      = 4000;
+input int    Counter_SL_Points           = 50;
+input int    Counter_TP_Points           = 3000;
+
+input int    BE_Trigger_Points           = 300;
+input int    Trail_Continuation_Points   = 300;
+input int    Trail_Counter_Points        = 150;
+input int    Trail_Supreme_Points        = 100;
+
+input int    MA_Touch_Buffer             = 75;
+input int    Fib_Lookback_Bars           = 350;
+
+input double Stoch_Oversold              = 20.0;
+input double Stoch_Weak_Low              = 35.0;
+input double Stoch_Mid                   = 50.0;
+input double Stoch_Weak_High             = 65.0;
+input double Stoch_Overbought            = 80.0;
 
 input bool   Use_OpenAI                  = false;
 input string OpenAI_API_Key              = "";
