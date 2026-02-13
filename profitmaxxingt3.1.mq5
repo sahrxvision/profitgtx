@@ -36,6 +36,7 @@ CTrade Trade;
 #include "PositionManagement.mqh"   // Position lifecycle
 #include "TradeExecution.mqh"       // Trade opening
 #include "SignalCoordinator.mqh"    // Cross-system signal consensus
+#include "NewsEngine.mqh"           // MT5 calendar news bias/filter
 #include "ChartLabels.mqh"          // Visual feedback
 #include "TradingSetups.mqh"        // All 18 setups
 #include "OpenAI.mqh"               // OpenAI integration
@@ -88,20 +89,17 @@ int OnInit()
    {
       // Configure AI components
       SetUseNeuralNetwork(true);      // Enable your Python NN
-      SetUseOpenAI(Use_OpenAI);       // Use existing OpenAI setting
-      SetRequireAIValidation(false);  // Don't block trades, just enhance
+      SetUseOpenAI(true);             // OpenAI mandatory
+      SetRequireAIValidation(true);   // AI gate always on
       
       Print("✅ Master AI System Active!");
    }
    
-   if(Use_OpenAI)
-   {
-      Print("========================================");
-      Print("🤖 OPENAI INTEGRATION:");
-      Print("  - Model: ", OpenAI_Model_Choice);
-      Print("  - Trade Validation: ", AI_Validate_Trades ? "ENABLED" : "DISABLED");
-      Print("  - Daily Briefing: ", AI_Daily_Briefing ? "ENABLED" : "DISABLED");
-   }
+   Print("========================================");
+   Print("🤖 OPENAI INTEGRATION (MANDATORY):");
+   Print("  - Model: ", OpenAI_Model_Choice);
+   Print("  - Trade Validation: ENABLED");
+   Print("  - Daily Briefing: ", AI_Daily_Briefing ? "ENABLED" : "DISABLED");
    
    Print("========================================");
 
@@ -127,6 +125,8 @@ int OnInit()
    // Initialize symbol-specific profile and re-entry system
    ApplySymbolProfile();
    InitReEntry();
+   InitNewsEngine();
+   UpdateNewsEngine();
    Print("📌 Symbol Profile: ", Symbol_Profile_Name,
          " | SL=", IntegerToString(Symbol_SL_Points),
          " | TP=", IntegerToString(Symbol_TP_Points));
@@ -136,30 +136,31 @@ int OnInit()
    if(Show_Levels) 
       DrawLevels();
    
-   // Initialize OpenAI (if enabled) - for your existing OpenAI functions
-   if(Use_OpenAI)
+   // Initialize OpenAI (mandatory for this build).
+   if(StringLen(OpenAI_API_Key) < 20)
    {
-      OpenAI_Model = OpenAI_Model_Choice;
-      AI_Initialized = InitializeOpenAI(OpenAI_API_Key);
-      
-      if(!AI_Initialized)
-      {
-         Print("⚠️ OpenAI initialization failed - check API key");
-         Print("💡 Get API key from: https://platform.openai.com/api-keys");
-      }
-      else
-      {
-         Print("✅ OpenAI integration ready");
-         
-         // Get initial market briefing
-         if(AI_Daily_Briefing)
-         {
-            Print("🤖 Fetching initial AI market analysis...");
-            string briefing = GetAIDailyBriefing();
-            DisplayAIBriefing(briefing);
-         }
-      }
+      Print("❌ OpenAI API key missing/invalid. Trading disabled.");
+      return INIT_FAILED;
    }
+
+   OpenAI_Model = OpenAI_Model_Choice;
+   AI_Initialized = InitializeOpenAI(OpenAI_API_Key);
+   if(!AI_Initialized)
+   {
+      Print("❌ OpenAI initialization failed. Trading disabled.");
+      return INIT_FAILED;
+   }
+
+   Print("✅ OpenAI integration ready");
+
+   if(AI_Daily_Briefing)
+   {
+      Print("🤖 Fetching initial AI market analysis...");
+      string briefing = GetAIDailyBriefing();
+      DisplayAIBriefing(briefing);
+   }
+
+   EventSetTimer(MathMax(5, News_Update_Seconds));
 
    Print("✅ Initialization complete");
    Print("========================================");
@@ -171,6 +172,8 @@ int OnInit()
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason)
 {
+   EventKillTimer();
+
    // Release indicators
    ReleaseIndicators();
 
@@ -188,6 +191,28 @@ void OnDeinit(const int reason)
    Print("  Buys: ", BuyTrades, " | Sells: ", SellTrades);
    Print("  Reversed: ", ClosedByReversal);
    Print("========================================");
+}
+
+//+------------------------------------------------------------------+
+//| Timer event: news + AI scheduled tasks                           |
+//+------------------------------------------------------------------+
+void OnTimer()
+{
+   UpdateNewsEngine();
+
+   if(AI_Initialized && AI_Daily_Briefing)
+   {
+      datetime now = TimeCurrent();
+      MqlDateTime dt;
+      TimeToStruct(now, dt);
+
+      if(dt.hour == AI_Briefing_Hour && now - Last_AI_Briefing_Time > 3600)
+      {
+         string briefing = GetAIDailyBriefing();
+         DisplayAIBriefing(briefing);
+         Last_AI_Briefing_Time = now;
+      }
+   }
 }
 
 //+------------------------------------------------------------------+
@@ -263,7 +288,7 @@ void OnTick()
    //==============================================================
    // PHASE 9: AI OPERATIONS (If enabled)
    //==============================================================
-   if(Use_OpenAI && AI_Initialized)
+   if(AI_Initialized)
    {
       // Daily briefing at specified hour
       if(AI_Daily_Briefing)

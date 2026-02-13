@@ -276,6 +276,9 @@ void BuildSignalCluster()
 
 bool ShouldTradeFromCluster(SignalCluster &cluster, double &multiplier)
 {
+   if(News_Trade_Block_Active)
+      return false;
+
    if(cluster.conflict_score > Max_Cluster_Conflict)
       return false;
 
@@ -292,6 +295,11 @@ bool ShouldTradeFromCluster(SignalCluster &cluster, double &multiplier)
    int state_dir = Current_Bias_Direction;
    if(state_dir > 0 && cluster.consensus_direction == "bearish") return false;
    if(state_dir < 0 && cluster.consensus_direction == "bullish") return false;
+
+   if(News_Bias_Direction > 0 && cluster.consensus_direction == "bearish")
+      return false;
+   if(News_Bias_Direction < 0 && cluster.consensus_direction == "bullish")
+      return false;
 
    multiplier = 1.0;
    if(cluster.combined_strength >= 85.0) multiplier += 0.3;

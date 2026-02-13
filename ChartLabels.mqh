@@ -12,6 +12,7 @@ void UpdateLabels()
    if(IsBearBias()) bias = "BEAR";
 
    string coord = Coordinator_AllowTrade ? "ALLOW" : "BLOCK";
+   string news_dir = (News_Bias_Direction > 0 ? "BULL" : News_Bias_Direction < 0 ? "BEAR" : "NEUTRAL");
 
    string text = "Mode:" + ModeToString(Current_Mode) +
                  " | State:" + StateToString(Current_State) +
@@ -23,7 +24,9 @@ void UpdateLabels()
                  " | Coord:" + coord +
                  " | CStr:" + DoubleToString(Coordinator_Cluster_Strength, 1) +
                  " | CConf:" + DoubleToString(Coordinator_Conflict_Score, 1) +
-                 " | NN:" + IntegerToString(NN_Bias) + "/" + DoubleToString(NN_Confidence, 0);
+                 " | NN:" + IntegerToString(NN_Bias) + "/" + DoubleToString(NN_Confidence, 0) +
+                 " | News:" + news_dir + "/" + DoubleToString(News_Bias_Strength, 0) +
+                 (News_Trade_Block_Active ? " BLOCK" : "");
 
    if(ObjectFind(0, STATUS_LABEL) < 0)
       ObjectCreate(0, STATUS_LABEL, OBJ_LABEL, 0, 0, 0);

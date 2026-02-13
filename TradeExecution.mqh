@@ -28,6 +28,9 @@ int CountOpenTradesForSymbol()
 
 bool CanOpenNewTrade()
 {
+   if(News_Trade_Block_Active)
+      return false;
+
    if(IsInCooldown())
       return false;
 

@@ -3,7 +3,7 @@
 
 void UpdateAILabel()
 {
-   if(!Use_OpenAI || !IsAIEnabled())
+   if(!IsAIEnabled())
    {
       ObjectDelete(0, "AILabel");
       ObjectDelete(0, "AIStatsLabel");

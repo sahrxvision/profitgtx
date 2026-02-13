@@ -60,11 +60,17 @@ input double NN_MinConfidenceToUse       = 55.0;
 input double NN_MaxRiskToUse             = 70.0;
 input bool   NN_DebugPrint               = false;
 
-input bool   Use_OpenAI                  = false;
+input bool   Use_News_Filter             = true;
+input int    News_Update_Seconds         = 30;
+input int    News_Lookback_Minutes       = 120;
+input int    News_Lookahead_Minutes      = 60;
+input int    News_HighImpact_Block_Minutes = 20;
+
+// OpenAI is mandatory in this build.
 input string OpenAI_API_Key              = "";
 input string OpenAI_Model_Choice         = "gpt-4o-mini";
-input bool   AI_Validate_Trades          = false;
-input bool   AI_Daily_Briefing           = false;
+input bool   AI_Validate_Trades          = true;
+input bool   AI_Daily_Briefing           = true;
 input int    AI_Briefing_Hour            = 7;
 
 #endif

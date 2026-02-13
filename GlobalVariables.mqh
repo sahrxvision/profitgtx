@@ -63,6 +63,13 @@ string   NN_Explain            = "";
 datetime NN_LastRun            = 0;
 bool     NN_UsedLastTick       = false;
 
+int      News_Bias_Direction   = 0;
+double   News_Bias_Strength    = 0.0;
+bool     News_Trade_Block_Active = false;
+string   News_Last_Headline    = "";
+string   News_Bias_Report      = "";
+datetime News_Last_Update      = 0;
+
 // Warning flags
 bool MA7_Cross_14_Warning = false;
 bool MA7_Cross_21_Warning = false;
