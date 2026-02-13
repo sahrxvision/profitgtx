@@ -1,0 +1,4 @@
+*.mq5 text eol=lf
+*.mqh text eol=lf
+*.py text eol=lf
+*.docx binary
