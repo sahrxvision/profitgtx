@@ -28,6 +28,14 @@ input double Stoch_Mid                   = 50.0;
 input double Stoch_Weak_High             = 65.0;
 input double Stoch_Overbought            = 80.0;
 
+input bool   Use_NeuralNet               = true;
+input string NN_ServerURL                = "http://127.0.0.1:8000/predict";
+input int    NN_TimeoutMs                = 3000;
+input int    NN_CooldownSeconds          = 15;
+input double NN_MinConfidenceToUse       = 55.0;
+input double NN_MaxRiskToUse             = 70.0;
+input bool   NN_DebugPrint               = false;
+
 input bool   Use_OpenAI                  = false;
 input string OpenAI_API_Key              = "";
 input string OpenAI_Model_Choice         = "gpt-4o-mini";

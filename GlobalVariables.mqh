@@ -27,8 +27,13 @@ datetime Last_AI_Briefing_Time = 0;
 int      AI_Validation_Accepts = 0;
 int      AI_Validation_Rejects = 0;
 
-double   NN_Bias               = 0.0;
+bool     NN_Initialized        = false;
+int      NN_Bias               = 0;
 double   NN_Confidence         = 0.0;
+double   NN_RiskScore          = 50.0;
+string   NN_Explain            = "";
+datetime NN_LastRun            = 0;
+bool     NN_UsedLastTick       = false;
 
 // Warning flags
 bool MA7_Cross_14_Warning = false;
