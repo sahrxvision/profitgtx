@@ -1,6 +1,8 @@
 #ifndef SIGNAL_COORDINATOR_MQH
 #define SIGNAL_COORDINATOR_MQH
 
+#include "CandlePatterns.mqh"
+
 struct CoordinatedSignal
 {
    string   source;

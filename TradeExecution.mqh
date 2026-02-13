@@ -1,6 +1,8 @@
 #ifndef TRADE_EXECUTION_MQH
 #define TRADE_EXECUTION_MQH
 
+#include "AISignalConfirmation.mqh"
+
 void UpdateLastTradeInfo(const string direction);
 
 bool IsInCooldown()
@@ -35,6 +37,26 @@ bool CanOpenNewTrade()
    return true;
 }
 
+int GetSLPoints(const bool continuation)
+{
+   if(Symbol_Profile_Initialized)
+   {
+      if(continuation) return Symbol_SL_Points;
+      return MathMax(20, Symbol_SL_Points / 2);
+   }
+   return continuation ? Continuation_SL_Points : Counter_SL_Points;
+}
+
+int GetTPPoints(const bool continuation)
+{
+   if(Symbol_Profile_Initialized)
+   {
+      if(continuation) return Symbol_TP_Points;
+      return MathMax(80, (int)((double)Symbol_TP_Points * 0.85));
+   }
+   return continuation ? Continuation_TP_Points : Counter_TP_Points;
+}
+
 double BuildLotMultiplier()
 {
    double mult = 1.0;
@@ -50,7 +72,6 @@ double BuildLotMultiplier()
    if(Current_State == STATE_CONTINUATION)
       mult *= War_Survivor_Lot_Multiplier;
 
-   // Coordinator multiplier is consensus-aware and includes conflict penalties.
    if(Use_Signal_Coordinator)
       mult *= Coordinator_Lot_Multiplier;
 
@@ -62,10 +83,18 @@ bool OpenBuy(const string reason, double lot_multiplier = 1.0)
    if(!CanOpenNewTrade())
       return false;
 
+   double ai_mult = 1.0;
+   if(!AIApproveTrade(true, reason, ai_mult))
+      return false;
+
+   bool continuation = (Current_Mode == MODE_TRENDING && Current_State == STATE_CONTINUATION);
    double entry = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
-   double lots = NormalizeLots(BaseLotSize * lot_multiplier * BuildLotMultiplier());
-   double sl = NormalizePrice(entry - ((Current_Mode == MODE_TRENDING ? Continuation_SL_Points : Counter_SL_Points) * _Point));
-   double tp = NormalizePrice(entry + ((Current_Mode == MODE_TRENDING ? Continuation_TP_Points : Counter_TP_Points) * _Point));
+   int sl_pts = GetSLPoints(continuation);
+   int tp_pts = GetTPPoints(continuation);
+
+   double lots = NormalizeLots(BaseLotSize * lot_multiplier * BuildLotMultiplier() * ai_mult);
+   double sl = NormalizePrice(entry - (sl_pts * _Point));
+   double tp = NormalizePrice(entry + (tp_pts * _Point));
 
    bool ok = Trade.Buy(lots, _Symbol, 0.0, sl, tp, reason);
    if(ok)
@@ -83,10 +112,18 @@ bool OpenSell(const string reason, double lot_multiplier = 1.0)
    if(!CanOpenNewTrade())
       return false;
 
+   double ai_mult = 1.0;
+   if(!AIApproveTrade(false, reason, ai_mult))
+      return false;
+
+   bool continuation = (Current_Mode == MODE_TRENDING && Current_State == STATE_CONTINUATION);
    double entry = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-   double lots = NormalizeLots(BaseLotSize * lot_multiplier * BuildLotMultiplier());
-   double sl = NormalizePrice(entry + ((Current_Mode == MODE_TRENDING ? Continuation_SL_Points : Counter_SL_Points) * _Point));
-   double tp = NormalizePrice(entry - ((Current_Mode == MODE_TRENDING ? Continuation_TP_Points : Counter_TP_Points) * _Point));
+   int sl_pts = GetSLPoints(continuation);
+   int tp_pts = GetTPPoints(continuation);
+
+   double lots = NormalizeLots(BaseLotSize * lot_multiplier * BuildLotMultiplier() * ai_mult);
+   double sl = NormalizePrice(entry + (sl_pts * _Point));
+   double tp = NormalizePrice(entry - (tp_pts * _Point));
 
    bool ok = Trade.Sell(lots, _Symbol, 0.0, sl, tp, reason);
    if(ok)

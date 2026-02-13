@@ -28,6 +28,7 @@ CTrade Trade;
 #include "FibLevels.mqh"            // Fibonacci calculations
 #include "Warnings.mqh"             // Warning detection (17+ signals)
 #include "Praise.mqh"               // Praise signals (8 trend signals)
+#include "PatternCoordinator.mqh"   // Fib + structure + candle combos
 
 // Advanced systems
 #include "MarketState.mqh"          // Market mode detection
@@ -38,6 +39,7 @@ CTrade Trade;
 #include "ChartLabels.mqh"          // Visual feedback
 #include "TradingSetups.mqh"        // All 18 setups
 #include "OpenAI.mqh"               // OpenAI integration
+#include "AISignalConfirmation.mqh" // AI trade approve/reject layer
 
 // 🤖 MASTER AI SYSTEM (Includes PatternSystem + NeuralNet)
 #include "MasterAICoordinator.mqh"  // Master AI: Patterns + Structure + NN + OpenAI
@@ -121,6 +123,13 @@ int OnInit()
 
    // Initialize coordinator
    InitializeSignalCoordinator();
+
+   // Initialize symbol-specific profile and re-entry system
+   ApplySymbolProfile();
+   InitReEntry();
+   Print("📌 Symbol Profile: ", Symbol_Profile_Name,
+         " | SL=", IntegerToString(Symbol_SL_Points),
+         " | TP=", IntegerToString(Symbol_TP_Points));
 
    // Calculate and draw levels
    CalculateLevels();
@@ -239,9 +248,12 @@ void OnTick()
    //==============================================================
    // PHASE 7: EXECUTE NEW SETUPS (WITH MASTER AI ENHANCEMENT)
    //==============================================================
+   ExecuteReEntries();             // Re-entry after closures
+   ExecuteMARetestAndRejectionSetups(); // MA pullback/rejection opportunities
    ExecuteContinuationSetups();  // 14 continuation setups
    ExecuteRangeSetups();          // Range trading setups
    ExecuteChopSetups();           // Mean reversion setups
+   ExecuteForceEntrySetups();     // Maintain minimum active entries
    
    //==============================================================
    // PHASE 8: UPDATE VISUAL FEEDBACK

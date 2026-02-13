@@ -55,6 +55,72 @@ bool Bear_MA50_Reclaimed()
    return (reclaimed || rejected);
 }
 
+void ApplySymbolProfile()
+{
+   string s = StringUpper(_Symbol);
+
+   Symbol_Profile_Name = "MANUAL";
+   Symbol_SL_Points = Manual_SL_Points;
+   Symbol_TP_Points = Manual_TP_Points;
+
+   if(!Use_Auto_Symbol_Config)
+   {
+      Symbol_Profile_Initialized = true;
+      return;
+   }
+
+   if(StringFind(s, "XAU") >= 0)
+   {
+      Symbol_Profile_Name = "XAUUSD";
+      Symbol_SL_Points = 500;
+      Symbol_TP_Points = 3500;
+   }
+   else if(StringFind(s, "US30") >= 0 || StringFind(s, "DJI") >= 0)
+   {
+      Symbol_Profile_Name = "US30";
+      Symbol_SL_Points = 150;
+      Symbol_TP_Points = 1000;
+   }
+   else if(StringFind(s, "NAS100") >= 0 || StringFind(s, "USTEC") >= 0)
+   {
+      Symbol_Profile_Name = "NAS100";
+      Symbol_SL_Points = 200;
+      Symbol_TP_Points = 1400;
+   }
+   else if(StringFind(s, "USOIL") >= 0 || StringFind(s, "WTI") >= 0)
+   {
+      Symbol_Profile_Name = "USOIL";
+      Symbol_SL_Points = 80;
+      Symbol_TP_Points = 600;
+   }
+   else if(StringFind(s, "BTC") >= 0 || StringFind(s, "ETH") >= 0)
+   {
+      Symbol_Profile_Name = "CRYPTO";
+      Symbol_SL_Points = 800;
+      Symbol_TP_Points = 6000;
+   }
+   else if(StringFind(s, "JPY") >= 0)
+   {
+      Symbol_Profile_Name = "JPY";
+      Symbol_SL_Points = 60;
+      Symbol_TP_Points = 450;
+   }
+   else if(StringFind(s, "CAD") >= 0)
+   {
+      Symbol_Profile_Name = "COMMODITY_FX";
+      Symbol_SL_Points = 40;
+      Symbol_TP_Points = 300;
+   }
+   else
+   {
+      Symbol_Profile_Name = "MAJOR_FX";
+      Symbol_SL_Points = 50;
+      Symbol_TP_Points = 350;
+   }
+
+   Symbol_Profile_Initialized = true;
+}
+
 string FamilyToText(const int mode)
 {
    if(mode == MODE_TRENDING) return "Trending";

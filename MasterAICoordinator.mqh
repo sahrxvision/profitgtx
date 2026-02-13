@@ -3,6 +3,7 @@
 
 #include "ChartStructure.mqh"
 #include "CandlePatterns.mqh"
+#include "PatternCoordinator.mqh"
 #include "NeuralNet.mqh"
 
 bool g_use_nn = true;
@@ -50,14 +51,16 @@ void UpdateMasterAI()
    DetectMarketStructure();
    DetectAllCandlestickPatterns();
 
-   int pattern_warns = GetPatternWarnCount();
-   int pattern_praise = GetPatternPraiseCount();
+   // Add chart-structure + fib + candlestick combo boosts.
+   UpdatePatternCoordinator();
+
+   int pattern_warns = GetPatternWarnCount() + PatternComboWarn;
+   int pattern_praise = GetPatternPraiseCount() + PatternComboPraise;
 
    int dir = 0;
    if(IsBullBias()) dir = 1;
    if(IsBearBias()) dir = -1;
 
-   // Optional live NN inference against local Python server.
    if(g_use_nn)
       UpdateNeuralNetSignal();
 
@@ -77,6 +80,9 @@ void UpdateMasterAI()
    g_master_signal.master_confidence = confidence;
    g_master_signal.structure_type = GetStructureString();
    g_master_signal.reasoning = "Combo matrix + patterns + structure";
+
+   if(DoubleTopAtFib) g_master_signal.reasoning += " + DoubleTop@Fib";
+   if(DoubleBottomAtFib) g_master_signal.reasoning += " + DoubleBottom@Fib";
 
    if(g_use_nn && NN_IsUsable())
       g_master_signal.reasoning += " + NN(" + IntegerToString(NN_Bias) + "," + DoubleToString(NN_Confidence, 1) + "%)";

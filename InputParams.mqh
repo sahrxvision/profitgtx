@@ -6,8 +6,14 @@ input bool   Show_Levels                 = true;
 input double BaseLotSize                 = 0.10;
 input double War_Survivor_Lot_Multiplier = 2.5;
 
+input bool   Use_Auto_Symbol_Config      = true;
+input int    Manual_SL_Points            = 800;
+input int    Manual_TP_Points            = 5000;
+input double Manual_RR_Ratio             = 6.25;
+
 input int    Trade_Cooldown_Seconds      = 300;
-input int    Max_Open_Trades             = 3;
+input int    Min_Active_Entries          = 4;
+input int    Max_Open_Trades             = 20;
 
 input int    Continuation_SL_Points      = 150;
 input int    Continuation_TP_Points      = 4000;
@@ -27,6 +33,17 @@ input double Stoch_Weak_Low              = 35.0;
 input double Stoch_Mid                   = 50.0;
 input double Stoch_Weak_High             = 65.0;
 input double Stoch_Overbought            = 80.0;
+
+input bool   Use_MA_Retest_Entries       = true;
+input bool   Use_MA_Rejection_Entries    = true;
+input int    MA_Retest_Cooldown_Seconds  = 60;
+
+input bool   Enable_ReEntry              = true;
+input int    ReEntry_Max_Attempts        = 2;
+input int    ReEntry_Cooldown            = 30;
+input bool   ReEntry_After_SL            = true;
+input bool   ReEntry_After_BE            = true;
+input bool   Require_Stronger_Signal     = true;
 
 input bool   Use_Signal_Coordinator      = true;
 input int    Conflict_Prevention_Seconds = 300;

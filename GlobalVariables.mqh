@@ -7,11 +7,19 @@ datetime LastEntryTime[64];
 datetime Last_Trade_Time       = 0;
 string   LastTradeDirection    = "";
 
+datetime Last_MA_Retest_Trade  = 0;
+datetime Last_MA_Reject_Trade  = 0;
+
 int      Active_Warnings       = 0;
 int      Active_Praise_Signals = 0;
 int      Warning_Confluence_Count = 0;
 bool     Warning_Confluence_3Plus = false;
 int      Praise_Count             = 0;
+
+int      PatternComboWarn      = 0;
+int      PatternComboPraise    = 0;
+bool     DoubleTopAtFib        = false;
+bool     DoubleBottomAtFib     = false;
 
 int      TodayTrades           = 0;
 int      BuyTrades             = 0;
@@ -20,11 +28,10 @@ int      ClosedByReversal      = 0;
 
 int      Current_Mode          = MODE_CHOP;
 int      Current_State         = STATE_PULLBACK;
-int      Current_Bias_Direction = 0; // -1 bear, 0 neutral, 1 bull
+int      Current_Bias_Direction = 0;
 
 double   State_Bias_Confidence = 0.0;
 
-// Coordinator summary shared with execution/labels
 int      Coordinator_Bias_Direction = 0;
 double   Coordinator_Cluster_Strength = 0.0;
 double   Coordinator_Conflict_Score = 100.0;
@@ -35,6 +42,11 @@ int      BullWarnCount         = 0;
 int      BullPraiseCount       = 0;
 int      BearWarnCount         = 0;
 int      BearPraiseCount       = 0;
+
+string   Symbol_Profile_Name   = "MANUAL";
+int      Symbol_SL_Points      = 800;
+int      Symbol_TP_Points      = 5000;
+bool     Symbol_Profile_Initialized = false;
 
 bool     AI_Initialized        = false;
 string   OpenAI_Model          = "";
