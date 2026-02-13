@@ -5,6 +5,7 @@ int      SetupCount[64];
 datetime LastEntryTime[64];
 
 datetime Last_Trade_Time       = 0;
+string   LastTradeDirection    = "";
 
 int      Active_Warnings       = 0;
 int      Active_Praise_Signals = 0;
@@ -19,6 +20,21 @@ int      ClosedByReversal      = 0;
 
 int      Current_Mode          = MODE_CHOP;
 int      Current_State         = STATE_PULLBACK;
+int      Current_Bias_Direction = 0; // -1 bear, 0 neutral, 1 bull
+
+double   State_Bias_Confidence = 0.0;
+
+// Coordinator summary shared with execution/labels
+int      Coordinator_Bias_Direction = 0;
+double   Coordinator_Cluster_Strength = 0.0;
+double   Coordinator_Conflict_Score = 100.0;
+double   Coordinator_Lot_Multiplier = 1.0;
+bool     Coordinator_AllowTrade = false;
+
+int      BullWarnCount         = 0;
+int      BullPraiseCount       = 0;
+int      BearWarnCount         = 0;
+int      BearPraiseCount       = 0;
 
 bool     AI_Initialized        = false;
 string   OpenAI_Model          = "";

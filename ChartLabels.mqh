@@ -11,13 +11,19 @@ void UpdateLabels()
    if(IsBullBias()) bias = "BULL";
    if(IsBearBias()) bias = "BEAR";
 
+   string coord = Coordinator_AllowTrade ? "ALLOW" : "BLOCK";
+
    string text = "Mode:" + ModeToString(Current_Mode) +
                  " | State:" + StateToString(Current_State) +
                  " | Bias:" + bias +
                  " | W:" + IntegerToString(Active_Warnings) +
                  " | P:" + IntegerToString(Active_Praise_Signals) +
                  " | ADX:" + DoubleToString(Current_ADX, 1) +
-                 " | StochK:" + DoubleToString(Stoch_K_Current, 1);
+                 " | StochK:" + DoubleToString(Stoch_K_Current, 1) +
+                 " | Coord:" + coord +
+                 " | CStr:" + DoubleToString(Coordinator_Cluster_Strength, 1) +
+                 " | CConf:" + DoubleToString(Coordinator_Conflict_Score, 1) +
+                 " | NN:" + IntegerToString(NN_Bias) + "/" + DoubleToString(NN_Confidence, 0);
 
    if(ObjectFind(0, STATUS_LABEL) < 0)
       ObjectCreate(0, STATUS_LABEL, OBJ_LABEL, 0, 0, 0);

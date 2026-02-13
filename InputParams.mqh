@@ -28,6 +28,13 @@ input double Stoch_Mid                   = 50.0;
 input double Stoch_Weak_High             = 65.0;
 input double Stoch_Overbought            = 80.0;
 
+input bool   Use_Signal_Coordinator      = true;
+input int    Conflict_Prevention_Seconds = 300;
+input double Signal_Consensus_Threshold  = 0.60;
+input double Min_Cluster_Strength        = 58.0;
+input double Max_Cluster_Conflict        = 40.0;
+input bool   Use_NN_In_Coordinator       = true;
+
 input bool   Use_NeuralNet               = true;
 input string NN_ServerURL                = "http://127.0.0.1:8000/predict";
 input int    NN_TimeoutMs                = 3000;

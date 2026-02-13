@@ -1,6 +1,8 @@
 #ifndef TRADE_EXECUTION_MQH
 #define TRADE_EXECUTION_MQH
 
+void UpdateLastTradeInfo(const string direction);
+
 bool IsInCooldown()
 {
    datetime now = TimeCurrent();
@@ -48,6 +50,10 @@ double BuildLotMultiplier()
    if(Current_State == STATE_CONTINUATION)
       mult *= War_Survivor_Lot_Multiplier;
 
+   // Coordinator multiplier is consensus-aware and includes conflict penalties.
+   if(Use_Signal_Coordinator)
+      mult *= Coordinator_Lot_Multiplier;
+
    return mult;
 }
 
@@ -65,6 +71,7 @@ bool OpenBuy(const string reason, double lot_multiplier = 1.0)
    if(ok)
    {
       Last_Trade_Time = TimeCurrent();
+      UpdateLastTradeInfo("bullish");
       TodayTrades++;
       BuyTrades++;
    }
@@ -85,6 +92,7 @@ bool OpenSell(const string reason, double lot_multiplier = 1.0)
    if(ok)
    {
       Last_Trade_Time = TimeCurrent();
+      UpdateLastTradeInfo("bearish");
       TodayTrades++;
       SellTrades++;
    }

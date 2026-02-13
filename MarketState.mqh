@@ -22,6 +22,14 @@ void UpdateModeAndState()
       Current_State = STATE_REVERSAL;
    else
       Current_State = STATE_PULLBACK;
+
+   // State bias for downstream execution gating.
+   Current_Bias_Direction = BiasDirection();
+
+   double raw = 50.0 + (double)(Active_Praise_Signals - Active_Warnings) * 5.0;
+   if(Current_Mode == MODE_TRENDING) raw += 10.0;
+   if(Current_Mode == MODE_CHOP) raw -= 10.0;
+   State_Bias_Confidence = MathMax(0.0, MathMin(100.0, raw));
 }
 
 #endif

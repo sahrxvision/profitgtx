@@ -34,6 +34,7 @@ CTrade Trade;
 #include "ReEntry.mqh"              // Re-entry combos (10 triggers)
 #include "PositionManagement.mqh"   // Position lifecycle
 #include "TradeExecution.mqh"       // Trade opening
+#include "SignalCoordinator.mqh"    // Cross-system signal consensus
 #include "ChartLabels.mqh"          // Visual feedback
 #include "TradingSetups.mqh"        // All 18 setups
 #include "OpenAI.mqh"               // OpenAI integration
@@ -117,6 +118,9 @@ int OnInit()
    // Initialize tracking arrays
    ArrayInitialize(SetupCount, 0);
    ArrayInitialize(LastEntryTime, 0);
+
+   // Initialize coordinator
+   InitializeSignalCoordinator();
 
    // Calculate and draw levels
    CalculateLevels();
@@ -223,24 +227,29 @@ void OnTick()
                           // Determine CONTINUATION/PULLBACK/REVERSAL
    
    //==============================================================
-   // PHASE 5: MANAGE EXISTING POSITIONS
+   // PHASE 5: COORDINATE ALL SIGNAL SOURCES
+   //==============================================================
+   CoordinateAllSignals();
+
+   //==============================================================
+   // PHASE 6: MANAGE EXISTING POSITIONS
    //==============================================================
    ManagePositions();  // Partial TPs, MFIB partials, BE, trailing
    
    //==============================================================
-   // PHASE 6: EXECUTE NEW SETUPS (WITH MASTER AI ENHANCEMENT)
+   // PHASE 7: EXECUTE NEW SETUPS (WITH MASTER AI ENHANCEMENT)
    //==============================================================
    ExecuteContinuationSetups();  // 14 continuation setups
    ExecuteRangeSetups();          // Range trading setups
    ExecuteChopSetups();           // Mean reversion setups
    
    //==============================================================
-   // PHASE 7: UPDATE VISUAL FEEDBACK
+   // PHASE 8: UPDATE VISUAL FEEDBACK
    //==============================================================
    UpdateLabels();  // Mode, State, Warning, Praise, Signal labels
    
    //==============================================================
-   // PHASE 8: AI OPERATIONS (If enabled)
+   // PHASE 9: AI OPERATIONS (If enabled)
    //==============================================================
    if(Use_OpenAI && AI_Initialized)
    {
